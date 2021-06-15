@@ -17,7 +17,32 @@ This project attempts to use the most up-to-date versions of the tech:
 3. Webpack @ `5.x.x`+
 4. Sass @ `6.x.x`+
 
-### Notes on Sass/Css usage
+## Getting Started
+
+Install dependencies:
+```sh
+npm i
+```
+To run in dev mode (opens in new Browser tab), run:
+```sh
+npm start
+```
+To run a production asset build, run:
+```sh
+npm run build
+```
+The build output is compiled into the `public/` directory.
+
+## ESLint
+The eslint configuration provided is my own preferred code style. It extends:
+1. `eslint:recommended`
+2. `plugin:@typescript-eslint/recommended`
+3. `plugin:react/recommended`
+
+And provides rule overrides to remove religious zealotry and other forms of code-style fascism 🙂 
+In other words, it's a useful style guide - but not dogmatic.
+
+## Notes on Sass/CSS usage
 This project leverages Sass file loader imports over inline injection:
 ```tsx
 // in /path/to/my-component-dir/my-component.tsx
@@ -49,19 +74,3 @@ Instead of build-time className renaming, style scoping is provided by coding co
 ```
 
 The reason is that I'm opinionated about this! I won't go into detail here, but if you prefer injection this template doesn't prevent it - so modify to your use case.
-
-## Getting Started
-
-Install dependencies:
-```sh
-npm i
-```
-To run in dev mode (opens in new Browser tab), run:
-```sh
-npm start
-```
-To run a production asset build, run:
-```sh
-npm run build
-```
-The build output is compiled into the `public/` directory.
