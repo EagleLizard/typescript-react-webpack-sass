@@ -9,6 +9,15 @@
     "esModuleInterop": true,
     "module": "commonjs",
     "target": "es5",
-    "jsx": "react"
+    "jsx": "react",
+    "baseUrl": "./src",
+    "paths": {
+        "@constants/*": [
+          "app/constants/*",
+        ],
+        "@models/*": [
+          "app/models/*",
+        ]
+    }
   }
 }

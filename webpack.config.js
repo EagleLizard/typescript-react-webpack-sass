@@ -3,11 +3,13 @@ const path = require('path');
 
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
 
 module.exports = (env, argv) => {
   let entry, distDir, output, devtool,
-    devServer, resolve, rules, plugins;
-  let htmlPlugin, miniCssExtractPlugin;
+    devServer, resolvePlugins, resolve, rules,
+    plugins;
+  let htmlPlugin, miniCssExtractPlugin, tsconfigPathsPlugin;
   let webpackConfig;
 
   const isDevelopment = argv.mode !== 'production';
@@ -18,6 +20,7 @@ module.exports = (env, argv) => {
 
   output = {
     path: distDir,
+    publicPath: '/',
     filename: 'bundle.js',
   };
 
@@ -29,7 +32,19 @@ module.exports = (env, argv) => {
     host: '0.0.0.0',
   };
 
+  tsconfigPathsPlugin = new TsconfigPathsPlugin({
+    configFile: './tsconfig.json',
+  });
+
+  resolvePlugins = [
+    tsconfigPathsPlugin,
+  ];
+
   resolve = {
+    plugins: resolvePlugins,
+    modules: [
+      'node_modules',
+    ],
     alias: {
       'react': path.resolve(__dirname, './node_modules/react'),
       'react-dom': path.resolve(__dirname, './node_modules/react-dom')
