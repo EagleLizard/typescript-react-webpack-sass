@@ -42,7 +42,6 @@ module.exports = (env, argv) => {
     },
     devtool: isDevelopment ? 'source-map' : false,
     devServer: {
-      contentBase: DIST_DIR,
       historyApiFallback: true,
       hot: true,
       open: true,
