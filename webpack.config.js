@@ -3,99 +3,101 @@ const path = require('path');
 
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+
+const DIST_DIR = path.resolve(__dirname, 'public');
 
 module.exports = (env, argv) => {
-  let entry, distDir, output, devtool,
-    devServer, resolvePlugins, resolve, rules,
-    plugins;
-  let htmlPlugin, miniCssExtractPlugin, tsconfigPathsPlugin;
   let webpackConfig;
 
   const isDevelopment = argv.mode !== 'production';
 
-  entry = path.resolve(__dirname, 'src/main.tsx');
-  distDir = path.resolve(__dirname, 'public');
-  devtool = isDevelopment ? 'inline-source-map' : false,
-
-  output = {
-    path: distDir,
-    publicPath: '/',
-    filename: 'bundle.js',
-  };
-
-  devServer = {
-    contentBase: distDir,
-    historyApiFallback: true,
-    hot: true,
-    open: true,
-    host: '0.0.0.0',
-  };
-
-  tsconfigPathsPlugin = new TsconfigPathsPlugin({
-    configFile: './tsconfig.json',
-  });
-
-  resolvePlugins = [
-    tsconfigPathsPlugin,
-  ];
-
-  resolve = {
-    plugins: resolvePlugins,
-    modules: [
-      'node_modules',
-    ],
-    alias: {
-      'react': path.resolve(__dirname, './node_modules/react'),
-      'react-dom': path.resolve(__dirname, './node_modules/react-dom')
-    },
-    extensions: [ '.ts', '.tsx', '.js' ],
-  },
-
-  htmlPlugin = new HtmlWebPackPlugin({
+  const htmlPlugin = new HtmlWebPackPlugin({
     template: './src/index.html',
+    filename: './index.html',
   });
-  miniCssExtractPlugin = new MiniCssExtractPlugin();
-
-  plugins = [
-    htmlPlugin,
-  ];
-
-  rules = [
-    {
-      test: /\.ts(x?)$/,
-      exclude: /node_modules/,
-      use: [
-        {
-          loader: 'ts-loader'
-        }
-      ]
-    },
-    {
-      test: /\.s?css$/,
-      use: [
-        isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
-        'css-loader',
-        'postcss-loader',
-        'sass-loader',
-      ],
-    },
-  ];
-
-  if(!isDevelopment) {
-    plugins.push(miniCssExtractPlugin);
-  }
+  const miniCssExtractPlugin = new MiniCssExtractPlugin();
+  const forkTsCheckerWebpackPlugin = new ForkTsCheckerWebpackPlugin();
 
   webpackConfig = {
-    entry,
-    output,
-    devtool,
-    devServer,
-    module: {
-      rules,
+    entry: path.resolve(__dirname, 'src/main.tsx'),
+    output: {
+      filename: '[name].[contenthash].js',
+      path: DIST_DIR,
+      clean: true,
     },
-    resolve,
-    plugins,
+    watch: isDevelopment ? true : false,
+    optimization: {
+      moduleIds: 'deterministic',
+      runtimeChunk: 'single',
+      splitChunks: {
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          }
+        }
+      },
+    },
+    devtool: isDevelopment ? 'source-map' : false,
+    devServer: {
+      contentBase: DIST_DIR,
+      historyApiFallback: true,
+      hot: true,
+      open: true,
+      host: '0.0.0.0',
+      port: 9420,
+    },
+    module: {
+      rules: [
+        {
+          test: /\.ts(x?)$/,
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: 'ts-loader'
+            }
+          ]
+        },
+        {
+          test: /\.s?css$/,
+          use: [
+            {
+              loader: isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+            },
+            {
+              loader: 'css-loader', // translates CSS into CommonJS
+              options: { importLoaders: 2 }, // tell that you are running your styles through two other loaders before this one
+            },
+            {
+              loader: 'postcss-loader',
+            },
+            {
+              loader: 'sass-loader', // compiles Sass to CSS
+            },
+          ],
+        },
+      ],
+    },
+    resolve: {
+      alias: {
+        'react': path.resolve(__dirname, './node_modules/react'),
+        'react-dom': path.resolve(__dirname, './node_modules/react-dom')
+      },
+      extensions: [
+        '.ts',
+        '.tsx',
+        '.js',
+        '.jsx',
+        '.css',
+      ],
+    },
+    plugins: [
+      htmlPlugin,
+      miniCssExtractPlugin,
+      forkTsCheckerWebpackPlugin,
+    ],
   };
 
   return webpackConfig;

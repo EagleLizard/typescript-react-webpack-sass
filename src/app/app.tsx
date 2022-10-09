@@ -1,15 +1,19 @@
 
 import './app.scss';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Switch, Route, Link, Redirect } from 'react-router-dom';
 
-import { TEST_CONSTANT } from '@constants/constants';
-
+import { TEST_CONSTANT } from './constants/constants';
 interface AppProps {
 
 }
 
 export function App(props: AppProps) {
+
+  useEffect(() => {
+    console.log('init');
+  }, []);
+
   return (
     <div className="app-main">
       <Switch>
@@ -21,7 +25,7 @@ export function App(props: AppProps) {
             <Route exact path="/home/">
               <div className="home-route">
                 <div className="header-text">
-                  Hi 🤠
+                  ~ Hi 🤠
                 </div>
                 <div className="text-content">
                   This is some text
