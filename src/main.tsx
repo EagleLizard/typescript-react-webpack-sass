@@ -1,7 +1,7 @@
 
 import React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 
 import { App } from './app/app';
 
@@ -9,9 +9,9 @@ import './main.scss';
 
 const Index = () => {
   return (
-    <BrowserRouter>
+    <Router>
       <App/>
-    </BrowserRouter>
+    </Router>
   );
 };
 
